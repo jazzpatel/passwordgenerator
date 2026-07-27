@@ -1,0 +1,16 @@
+{
+  "name": "spinlock",
+  "version": "1.0.0",
+  "description": "Slot-Machine Password Generator PWA",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

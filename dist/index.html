@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="SpinLock — Slot-Machine Password Generator"
+    />
+    <meta name="theme-color" content="#1a1a2e" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <title>SpinLock — Password Generator</title>
+    <script type="module" crossorigin src="/assets/index-C5X9EHcx.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Bu9RWCWP.css">
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <div class="logo">
+          <span class="logo-icon">🔐</span>
+          <h1>SpinLock</h1>
+          <span class="logo-tagline">Slot-Machine Password Generator</span>
+        </div>
+        <button id="install-btn" class="btn btn-ghost" style="display: none">
+          📲 Install App
+        </button>
+      </header>
+
+      <main class="main">
+        <!-- Slot Machine Display -->
+        <section class="slot-section" aria-label="Password display">
+          <div
+            id="reels-container"
+            class="reels-container"
+            aria-live="polite"
+            aria-label="Generated password"
+          >
+            <div class="reel-placeholder">
+              Press <strong>Spin</strong> to generate a password
+            </div>
+          </div>
+          <div class="slot-actions">
+            <button
+              id="spin-btn"
+              class="btn btn-spin"
+              aria-label="Generate password"
+            >
+              <span class="spin-icon">🎰</span> Spin
+            </button>
+          </div>
+          <!-- floating copy icon — bottom-right of slot section -->
+          <button
+            id="copy-btn"
+            class="btn-copy-icon"
+            style="display: none"
+            aria-label="Copy password to clipboard"
+            title="Copy password"
+          >
+            <span id="copy-icon">📋</span>
+          </button>
+          <div id="toast" class="toast" role="status" aria-live="polite"></div>
+        </section>
+
+        <!-- Strength Indicator -->
+        <section class="strength-section" aria-label="Password strength">
+          <div class="strength-header">
+            <span class="strength-label">Strength</span>
+            <span id="strength-text" class="strength-text">—</span>
+            <span id="crack-time" class="crack-time"></span>
+          </div>
+          <div
+            class="strength-bar-bg"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-label="Password strength meter"
+          >
+            <div id="strength-bar" class="strength-bar"></div>
+          </div>
+          <div id="entropy-text" class="entropy-text"></div>
+        </section>
+
+        <!-- Configuration -->
+        <section class="config-section" aria-label="Password configuration">
+          <!-- Presets -->
+          <div class="config-group">
+            <label class="group-label">Presets</label>
+            <div class="preset-buttons">
+              <button class="btn btn-preset" data-preset="balanced">
+                ⚖️ Balanced
+              </button>
+              <button class="btn btn-preset" data-preset="max">
+                🛡️ Max Security
+              </button>
+              <button class="btn btn-preset" data-preset="memorable">
+                🧠 Memorable
+              </button>
+              <button class="btn btn-preset" data-preset="pin">🔢 PIN</button>
+            </div>
+          </div>
+
+          <!-- Length -->
+          <div class="config-group">
+            <label class="group-label" for="length-slider">
+              Length: <strong id="length-display">16</strong>
+            </label>
+            <!-- Quick-select radio pills -->
+            <div
+              class="length-quick"
+              role="group"
+              aria-label="Quick-select password length"
+            >
+              <label class="radio-pill"
+                ><input type="radio" name="length-preset" value="8" /><span
+                  >8</span
+                ></label
+              >
+              <label class="radio-pill"
+                ><input type="radio" name="length-preset" value="12" /><span
+                  >12</span
+                ></label
+              >
+              <label class="radio-pill"
+                ><input
+                  type="radio"
+                  name="length-preset"
+                  value="16"
+                  checked
+                /><span>16</span></label
+              >
+              <label class="radio-pill"
+                ><input type="radio" name="length-preset" value="20" /><span
+                  >20</span
+                ></label
+              >
+              <label class="radio-pill"
+                ><input type="radio" name="length-preset" value="24" /><span
+                  >24</span
+                ></label
+              >
+              <label class="radio-pill"
+                ><input type="radio" name="length-preset" value="32" /><span
+                  >32</span
+                ></label
+              >
+              <label class="radio-pill"
+                ><input type="radio" name="length-preset" value="48" /><span
+                  >48</span
+                ></label
+              >
+              <label class="radio-pill"
+                ><input type="radio" name="length-preset" value="64" /><span
+                  >64</span
+                ></label
+              >
+            </div>
+            <div class="slider-row">
+              <span class="slider-min">4</span>
+              <input
+                type="range"
+                id="length-slider"
+                min="4"
+                max="64"
+                value="16"
+                step="1"
+                aria-label="Password length"
+              />
+              <span class="slider-max">64</span>
+            </div>
+          </div>
+
+          <!-- Character Sets -->
+          <div class="config-group">
+            <label class="group-label">Character Sets</label>
+            <div class="checkbox-grid">
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-upper" checked />
+                <span>Uppercase (A–Z)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-lower" checked />
+                <span>Lowercase (a–z)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-numbers" checked />
+                <span>Numbers (0–9)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-symbols" checked />
+                <span>Symbols (!@#$…)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-no-ambiguous" />
+                <span>Exclude ambiguous (l, 1, I, 0, O)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Multi-language word blending -->
+          <div class="config-group">
+            <label class="group-label">
+              <input type="checkbox" id="opt-passphrase" />
+              <span>Memorable Passphrase (word blending)</span>
+            </label>
+            <div id="language-options" class="language-options hidden">
+              <label class="group-label-sm">Select languages to blend:</label>
+              <div class="language-grid">
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    class="lang-opt"
+                    value="english"
+                    checked
+                  />
+                  <span>🇬🇧 English</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" class="lang-opt" value="spanish" />
+                  <span>🇪🇸 Spanish</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" class="lang-opt" value="french" />
+                  <span>🇫🇷 French</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" class="lang-opt" value="german" />
+                  <span>🇩🇪 German</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" class="lang-opt" value="japanese" />
+                  <span>🇯🇵 Japanese (romaji)</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" class="lang-opt" value="portuguese" />
+                  <span>🇧🇷 Portuguese</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Clipboard auto-clear -->
+          <div class="config-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="opt-auto-clear" />
+              <span>Auto-clear clipboard after</span>
+            </label>
+            <div id="auto-clear-options" class="auto-clear-options hidden">
+              <select
+                id="clear-timeout"
+                aria-label="Clipboard auto-clear timeout"
+              >
+                <option value="15">15 seconds</option>
+                <option value="30" selected>30 seconds</option>
+                <option value="60">60 seconds</option>
+                <option value="120">2 minutes</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- Embed Code -->
+        <section class="embed-section" aria-label="Embed widget">
+          <details>
+            <summary class="embed-summary">📦 Embed on your site</summary>
+            <div class="embed-content">
+              <p class="embed-desc">
+                Drop this snippet into any page to embed SpinLock:
+              </p>
+              <pre id="embed-code" class="embed-code"></pre>
+              <button id="copy-embed-btn" class="btn btn-ghost">
+                📋 Copy embed code
+              </button>
+            </div>
+          </details>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>
+          All generation is 100% local · <code>crypto.getRandomValues</code> ·
+          No data ever transmitted
+        </p>
+      </footer>
+    </div>
+
+  </body>
+</html>
