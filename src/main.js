@@ -3,11 +3,110 @@ import { generatePassword } from "./generator.js";
 import { calcEntropy, getStrength, crackTime } from "./strength.js";
 import { buildReels, animateReels } from "./animation.js";
 
-// ─── PWA: Register Service Worker ─────────────────────────────────────────
+// ─── PWA: Service Worker registration ────────────────────────────────────
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  window.addEventListener("load", async () => {
+    try {
+      const reg = await navigator.serviceWorker.register("/sw.js", {
+        scope: "/",
+      });
+
+      // Watch for an updated SW waiting to take over
+      const onNewWorker = (worker) => {
+        worker.addEventListener("statechange", () => {
+          if (
+            worker.state === "installed" &&
+            navigator.serviceWorker.controller
+          ) {
+            showUpdateBanner(worker);
+          }
+        });
+      };
+
+      if (reg.installing) onNewWorker(reg.installing);
+      reg.addEventListener("updatefound", () => onNewWorker(reg.installing));
+
+      // Periodically check for updates every 60 s when the page is visible
+      setInterval(() => {
+        if (document.visibilityState === "visible") reg.update();
+      }, 60_000);
+    } catch (err) {
+      console.warn("[SW] Registration failed:", err);
+    }
   });
+
+  // Reload once the new SW has claimed the page
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+}
+
+function showUpdateBanner(worker) {
+  // Only show one banner at a time
+  if (document.getElementById("sw-update-banner")) return;
+
+  const banner = document.createElement("div");
+  banner.id = "sw-update-banner";
+  banner.setAttribute("role", "status");
+  banner.innerHTML = `
+    <span>🔄 A new version of SpinLock is ready.</span>
+    <button id="sw-update-btn">Update now</button>
+    <button id="sw-dismiss-btn" aria-label="Dismiss">✕</button>
+  `;
+  Object.assign(banner.style, {
+    position: "fixed",
+    bottom: "24px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    zIndex: "9999",
+    background: "#1a1a3e",
+    color: "#e2e8f0",
+    border: "1.5px solid #7c3aed",
+    borderRadius: "12px",
+    padding: "12px 18px",
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+    fontSize: "0.9rem",
+    whiteSpace: "nowrap",
+    boxShadow: "0 4px 32px rgba(124,58,237,0.45)",
+    animation: "fadeSlideUp 0.3s ease",
+  });
+
+  // Inject the keyframe once
+  if (!document.getElementById("sw-banner-style")) {
+    const style = document.createElement("style");
+    style.id = "sw-banner-style";
+    style.textContent = `
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+        to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+      #sw-update-btn {
+        background: #7c3aed; color: #fff; border: none;
+        border-radius: 8px; padding: 6px 16px;
+        cursor: pointer; font-weight: 700; font-size: 0.88rem;
+      }
+      #sw-update-btn:hover { background: #a855f7; }
+      #sw-dismiss-btn {
+        background: transparent; color: #94a3b8; border: none;
+        cursor: pointer; font-size: 1.1rem; line-height: 1;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.body.appendChild(banner);
+
+  document.getElementById("sw-update-btn").onclick = () => {
+    worker.postMessage("SKIP_WAITING");
+    banner.remove();
+  };
+  document.getElementById("sw-dismiss-btn").onclick = () => banner.remove();
 }
 
 // ─── PWA: Install prompt ───────────────────────────────────────────────────
