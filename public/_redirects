@@ -1,3 +1,0 @@
-# Cloudflare Pages — SPA routing
-# All requests that don't match a static file fall through to index.html
-/*    /index.html    200
