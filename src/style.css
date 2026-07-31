@@ -282,7 +282,8 @@ body {
 .slot-section,
 .strength-section,
 .config-group,
-.embed-section {
+.embed-section,
+.settings-details {
     border: none;
     /* remove solid border; gradient pseudo replaces it */
 }
@@ -436,6 +437,76 @@ body {
 
 .toast.visible {
     opacity: 1;
+}
+
+/* ─── Settings collapsible ────────────────────────────────────────────── */
+.settings-details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.settings-details[open] .settings-summary-chevron {
+    transform: rotate(180deg);
+}
+
+.settings-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    list-style: none;
+    padding: 12px 18px;
+    border-radius: var(--radius);
+    background: var(--panel);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #e2e8f0;
+    user-select: none;
+    gap: 8px;
+}
+
+.settings-summary::-webkit-details-marker {
+    display: none;
+}
+
+.settings-summary:hover {
+    background: #1e1b4b;
+}
+
+.settings-summary-chevron {
+    font-size: 1rem;
+    color: #a78bfa;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+
+/* Quote display */
+.quote-display {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #c4b5fd;
+    text-align: center;
+    min-height: 0;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.quote-display.visible {
+    opacity: 1;
+}
+
+.quote-display .quote-author {
+    display: block;
+    margin-top: 6px;
+    font-style: normal;
+    font-size: 0.82rem;
+    color: #a78bfa;
+    letter-spacing: 0.03em;
 }
 
 /* ─── Strength Section ────────────────────────────────────────────────── */

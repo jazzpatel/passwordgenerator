@@ -53,20 +53,12 @@ function generateFromPool(pool, length) {
 }
 
 /**
- * Generate a memorable multi-language passphrase.
- * Interleaves words from selected languages with optional numbers/symbols.
+ * Generate a memorable passphrase from the English word list.
+ * Interleaves words with optional numbers/symbols.
  */
 function generatePassphrase(options, length) {
-  const langs =
-    options.languages && options.languages.length > 0
-      ? options.languages
-      : ["english"];
-
-  // Collect word pool from selected languages
-  const allWords = [];
-  for (const lang of langs) {
-    if (WORD_LISTS[lang]) allWords.push(...WORD_LISTS[lang]);
-  }
+  // Always use English word list
+  const allWords = [...WORD_LISTS["english"]];
 
   // Build separator / connector characters
   let connectors = "";
@@ -151,15 +143,7 @@ export function generatePassword(options) {
  */
 export function getPoolSize(options) {
   if (options.passphrase) {
-    const langs =
-      options.languages && options.languages.length > 0
-        ? options.languages
-        : ["english"];
-    let words = 0;
-    for (const lang of langs) {
-      if (WORD_LISTS[lang]) words += WORD_LISTS[lang].length;
-    }
-    return words;
+    return WORD_LISTS["english"].length;
   }
   return buildCharPool(options).length;
 }

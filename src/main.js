@@ -143,9 +143,6 @@ const optNumbers = document.getElementById("opt-numbers");
 const optSymbols = document.getElementById("opt-symbols");
 const optNoAmbiguous = document.getElementById("opt-no-ambiguous");
 const optPassphrase = document.getElementById("opt-passphrase");
-const languageOptions = document.getElementById("language-options");
-const langOpts = () =>
-  [...document.querySelectorAll(".lang-opt:checked")].map((el) => el.value);
 
 const optAutoClear = document.getElementById("opt-auto-clear");
 const autoClearOptions = document.getElementById("auto-clear-options");
@@ -158,6 +155,7 @@ const entropyText = document.getElementById("entropy-text");
 
 const embedCode = document.getElementById("embed-code");
 const copyEmbedBtn = document.getElementById("copy-embed-btn");
+const quoteDisplay = document.getElementById("quote-display");
 
 // ─── State ─────────────────────────────────────────────────────────────────
 let currentPassword = "";
@@ -174,7 +172,6 @@ function getOptions() {
     symbols: optSymbols.checked,
     noAmbiguous: optNoAmbiguous.checked,
     passphrase: optPassphrase.checked,
-    languages: langOpts(),
   };
 }
 
@@ -234,6 +231,10 @@ async function spin() {
   spinBtn.disabled = true;
   copyBtn.style.display = "none";
 
+  // Clear quote immediately when spinning
+  quoteDisplay.classList.remove("visible");
+  quoteDisplay.innerHTML = "";
+
   // Calculate dynamic duration based on length (1.5s–3s)
   const duration = Math.min(3000, Math.max(1500, 1200 + password.length * 55));
 
@@ -252,6 +253,18 @@ async function spin() {
 
   // Announce to screen readers
   reelsContainer.setAttribute("aria-label", `Generated password: ${password}`);
+
+  // Fetch and display a random quote
+  try {
+    const res = await fetch("https://dummyjson.com/quotes/random");
+    if (res.ok) {
+      const data = await res.json();
+      quoteDisplay.innerHTML = `"${data.quote}" <span class="quote-author">— ${data.author}</span>`;
+      quoteDisplay.classList.add("visible");
+    }
+  } catch {
+    // Silently ignore fetch errors
+  }
 }
 
 // ─── Copy ──────────────────────────────────────────────────────────────────
@@ -357,7 +370,6 @@ function applyPreset(name) {
   optSymbols.checked = p.symbols;
   optNoAmbiguous.checked = p.noAmbiguous;
   optPassphrase.checked = p.passphrase;
-  languageOptions.classList.toggle("hidden", !p.passphrase);
   updateStrength();
 
   document.querySelectorAll(".btn-preset").forEach((btn) => {
@@ -405,12 +417,7 @@ document.querySelectorAll('.radio-pill input[type="radio"]').forEach((r) => {
 });
 
 optPassphrase.addEventListener("change", () => {
-  languageOptions.classList.toggle("hidden", !optPassphrase.checked);
   updateStrength();
-});
-
-document.querySelectorAll(".lang-opt").forEach((el) => {
-  el.addEventListener("change", updateStrength);
 });
 
 optAutoClear.addEventListener("change", () => {

@@ -4,7 +4,7 @@
   "description": "Generate strong, secure passwords offline. Cryptographically secure — nothing ever leaves your device.",
   "start_url": "/",
   "scope": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait-primary",
   "background_color": "#0d0d1a",
   "theme_color": "#7c3aed",
