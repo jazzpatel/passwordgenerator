@@ -1,20 +1,42 @@
 {
-  "name": "SpinLock — Password Generator",
+  "name": "SpinLock Password Generator",
   "short_name": "SpinLock",
-  "description": "Slot-machine password generator. All generation is local, cryptographically secure.",
+  "description": "Generate strong, secure passwords offline. Cryptographically secure — nothing ever leaves your device.",
   "start_url": "/",
-  "display": "standalone",
+  "scope": "/",
+  "display": "fullscreen",
+  "orientation": "portrait-primary",
   "background_color": "#0d0d1a",
-  "theme_color": "#1a1a2e",
-  "orientation": "any",
+  "theme_color": "#7c3aed",
+  "lang": "en",
+  "categories": ["utilities", "security", "productivity"],
   "icons": [
     {
       "src": "/icons/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [],
-  "categories": ["utilities", "productivity", "security"]
+  "shortcuts": [
+    {
+      "name": "Generate Password",
+      "short_name": "Generate",
+      "description": "Open SpinLock and generate a password",
+      "url": "/?action=generate",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
 }
